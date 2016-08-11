@@ -1,28 +1,47 @@
-(function ( $ ) {
+// Retrieve the viewport width and build up conditionals for enable/disable or switch between effects
 
-    $.fn.ficShowMore = function() {
+// Retrieve the target element height and cut it with a blur effect at the set height, depending of the viewport width and device orientation
 
-        var maxInitialHeight = 150;
+// Set an event that trigger the show action, like when you scroll to the target element
+//this.css( "color", "green" );
+;( function( $, window, document, undefined ) {
+    "use strict";
 
-        this.innerHeight(maxInitialHeight);
-        this.css( "overflow", "hidden");
-
-        this.find( "*[data-fic-trigger]" ).click(function(){
-            console.log("bar");
-            $( "p" ).css( "color", "red" );
-        });
-        this.find("p").css( "color", "green" );
-        console.log(this.innerHeight());
-        return this;
+    var pluginName = "ficShowMore";
+    var defaults = {
+        maxHeight: 150
     };
 
-    // Retrieve the viewport width and build up conditionals for enable/disable or switch between effects
+    function Plugin ( element, options ) {
+        this.element = element;
+        this.settings = $.extend( {}, defaults, options );
+        this._defaults = defaults;
+        this._name = pluginName;
 
-    // Retrieve the target element height and cut it with a blur effect at the set height, depending of the viewport width and device orientation
+        this.init();
+    }
 
-    // Set an event that trigger the show action, like when you scroll to the target element
-    //this.css( "color", "green" );
+    $.extend( Plugin.prototype, {
+        init: function() {
+            // console.log( "ready" );
+            $( this.element ).css( "overflow", "hidden" );
 
-}( jQuery ));
+            $( this.element ).find( "*[data-fic-trigger]" ).click(function() {
+                // console.log( "bar" );
+                $( "p" ).css( "color", "red" );
+            } );
 
-$( "div[data-fic-container]" ).ficShowMore();
+            $( this.element ).find( "p" ).css( "color", "green" );
+            // console.log($( this.element ).innerHeight());
+        }
+    });
+
+    $.fn[ pluginName ] = function( options ) {
+        return this.each(function() {
+            if ( !$.data( this, "plugin_" + pluginName ) ) {
+                  $.data( this, "plugin_" +
+                          pluginName, new Plugin( this, options ) );
+            }
+        } );
+    };
+} )( jQuery, window, document );
